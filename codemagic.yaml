@@ -1,18 +1,47 @@
 workflows:
-    simulator-native-ios:
-        name: iOS simulator build
-        max_build_duration: 120
-        environment:
-            vars:
-               XCODE_WORKSPACE: "your_workspace_name.xcworkspace" # <-- Put the name of your Xcode workspace here
-               XCODE_SCHEME: "your_workspace_name" # <-- Put the name of your Xcode scheme here
-            xcode: 13.4.1
-            cocoapods: default
-        scripts:
-            - name: Build ipa for distribution
-              script: |
-                                xcodebuild build -workspace "$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.4' -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO 
-        artifacts:
-          - build/ios/ipa/*.ipa
-          - /tmp/xcodebuild_logs/*.log
-          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+  ios-workflow:
+    name: iOS Workflow
+    # instance_type: mac_mini
+    max_build_duration: 120
+    environment:
+      groups:
+        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+        - ios_config # <-- (Includes APP_STORE_ID)
+        # Add the above group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+      vars:
+        XCODE_WORKSPACE: 'Runner.xcworkspace'
+        XCODE_SCHEME: 'Runner'
+        BUNDLE_ID: 'laceitapp1'
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Use system default keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter unit tests
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
