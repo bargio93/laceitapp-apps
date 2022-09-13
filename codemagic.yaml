@@ -2,7 +2,6 @@ workflows:
     simulator-native-ios:
         name: iOS simulator build
         max_build_duration: 120
-        instance_type: mac_pro
         environment:
             vars:
                XCODE_WORKSPACE: "your_workspace_name.xcworkspace" # <-- Put the name of your Xcode workspace here
