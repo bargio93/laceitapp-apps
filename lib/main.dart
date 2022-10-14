@@ -102,12 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
           onWillPop: () => _exitApp(context),
           child:WebView(
             zoomEnabled: false,
-            initialUrl: 'http://laceitapp.it',
+            initialUrl: Uri.encodeFull('https://laceitapp.it'),
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
-              EasyLoading.show(status: 'loading...');
               _controller = webViewController;
-
+              EasyLoading.show(status: 'loading...');
             },
             onPageFinished: (url) {
               EasyLoading.dismiss();
