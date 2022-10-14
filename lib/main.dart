@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onWillPop: () => _exitApp(context),
           child:WebView(
             zoomEnabled: false,
-            initialUrl: 'https://laceitapp.it/app/home',
+            initialUrl: 'https://google.com',
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _controller = webViewController;
