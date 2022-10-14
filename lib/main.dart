@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onWillPop: () => _exitApp(context),
           child:WebView(
             zoomEnabled: false,
-            initialUrl: 'https://google.com',
+            initialUrl: 'https://laceitapp.it',
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _controller = webViewController;
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _toasterJavascriptChannel(context),
             },
             navigationDelegate: (NavigationRequest request) {
-              if (request.url.startsWith('https://laceitapp.it/')) {
+              if (request.url.startsWith('https://laceitapp.it')) {
                 print('blocking navigation to $request}');
                 return NavigationDecision.prevent;
               }
