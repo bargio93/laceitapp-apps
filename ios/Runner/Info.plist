@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+<plist version="1.0.1">
 <dict>
     <key>NSAppTransportSecurity</key>
     <dict>
@@ -50,5 +50,9 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>Your location is required to help us find the nearest store</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Your location is required to help us find the nearest store</string>
 </dict>
 </plist>

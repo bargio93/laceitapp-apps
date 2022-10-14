@@ -1,14 +1,24 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:laceitapp/firebase.dart' as Firebase;
+import 'package:laceitapp/firebase_options.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:laceitapp/Permissions.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 void main() async {
+  Firebase.inizializeFirebase();
   runApp(const MyApp());
+
 }
+
 
 class MyApp extends StatelessWidget {
 
@@ -17,9 +27,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    firebaseFunction();
     var status = Permissions.checkServiceStatus(context);
     print(status);
-    return MaterialApp(
+    return  OverlaySupport.global(child: MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -34,7 +45,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    ));
+  }
+
+  void firebaseFunction() async {
+    Firebase.getToken();
+    Firebase.listenForegroundMessage();
+
+
   }
 }
 
