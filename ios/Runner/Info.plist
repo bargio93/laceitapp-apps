@@ -34,6 +34,10 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+       <key>NSAllowsArbitraryLoads</key><true/>
+    </dict>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -54,5 +58,9 @@
     <string>Your location is required to help us find the nearest store</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Your location is required to help us find the nearest store</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Your location is required to help us find the nearest store<</string>
+    <key>NSLocationUsageDescription</key>
+    <string>OYour location is required to help us find the nearest store<</string>
 </dict>
 </plist>
