@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:laceitapp/firebase.dart' as Firebase;
 import 'package:laceitapp/firebase_options.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -11,7 +12,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:laceitapp/Permissions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 void main() async {
   //Firebase.inizializeFirebase();
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+        builder: EasyLoading.init(),
       home: Scaffold(
         body: SafeArea(
             child: MyHomePage(title: 'Flutter Demo Home Page')),
@@ -51,7 +52,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -63,6 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
   late WebViewController _controller;
   DateTime pre_backpress = DateTime.now();
 
+  @override
+  void initState() {
+
+    super.initState();
+  }
   /*
     void initState() {
 
@@ -97,10 +102,16 @@ class _MyHomePageState extends State<MyHomePage> {
           onWillPop: () => _exitApp(context),
           child:WebView(
             zoomEnabled: false,
-            initialUrl: 'https://laceitapp.it',
+            initialUrl: 'http://laceitapp.it',
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
+              EasyLoading.show(status: 'loading...');
               _controller = webViewController;
+
+            },
+            onPageFinished: (url) {
+              EasyLoading.dismiss();
+              _controller.evaluateJavascript("console.log('Hello')");
             },
             gestureNavigationEnabled: true,
             onProgress: (int progress) {
@@ -119,10 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             onPageStarted: (String url) {
               print('Page started loading: $url');
-            },
-            onPageFinished: (String url) {
-              print('Page finished loading: $url');
-            },
+            }
           )));
         }
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
