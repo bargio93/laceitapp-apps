@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onWillPop: () => _exitApp(context),
           child:WebView(
             zoomEnabled: false,
-            initialUrl: Uri.encodeFull('https://laceitapp.it'),
+            initialUrl: Uri.encodeFull('https://main.ddbvjes0hdtuq.amplifyapp.com'),
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _controller = webViewController;
