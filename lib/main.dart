@@ -16,7 +16,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 void main() async {
   //Firebase.inizializeFirebase();
   runApp(const MyApp());
-
 }
 
 
@@ -62,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late WebViewController _controller;
   DateTime pre_backpress = DateTime.now();
+  bool isLoading=true;
 
   @override
   void initState() {
@@ -96,41 +96,59 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       );
       */
+      /*EasyLoading.instance
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.dark
+        ..progressColor = Color(0xff9B2335)
+        ..maskColor = Colors.blue.withOpacity(0.5);
+
+       */
+
 
       return Scaffold(
           body:WillPopScope(
           onWillPop: () => _exitApp(context),
-          child:WebView(
-            zoomEnabled: false,
-            initialUrl: Uri.encodeFull('https://main.ddbvjes0hdtuq.amplifyapp.com'),
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController webViewController) {
-              _controller = webViewController;
-              EasyLoading.show(status: 'loading...');
-            },
-            onPageFinished: (url) {
-              EasyLoading.dismiss();
-              _controller.evaluateJavascript("console.log('Hello')");
-            },
-            gestureNavigationEnabled: true,
-            onProgress: (int progress) {
-              print('WebView is loading (progress : $progress%)');
-            },
-            javascriptChannels: <JavascriptChannel>{
-              _toasterJavascriptChannel(context),
-            },
-            navigationDelegate: (NavigationRequest request) {
-              if (request.url.startsWith('https://laceitapp.it')) {
-                print('blocking navigation to $request}');
-                return NavigationDecision.prevent;
+          child: Stack(
+            children: <Widget>[
+              WebView(
+              zoomEnabled: false,
+              initialUrl: Uri.encodeFull('https://appprod.ddbvjes0hdtuq.amplifyapp.com'),
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController webViewController) {
+                _controller = webViewController;
+              },
+              onPageFinished: (url) {
+                setState(() {
+                  isLoading = false;
+                });
+                _controller.evaluateJavascript("console.log('Hello')");
+              },
+              gestureNavigationEnabled: true,
+              onProgress: (int progress) {
+                print('WebView is loading (progress : $progress%)');
+              },
+              javascriptChannels: <JavascriptChannel>{
+                _toasterJavascriptChannel(context),
+              },
+              navigationDelegate: (NavigationRequest request) {
+                if (request.url.startsWith('https://laceitapp.it')) {
+                  print('blocking navigation to $request}');
+                  return NavigationDecision.prevent;
+                }
+                print('allowing navigation to $request');
+                return NavigationDecision.navigate;
+              },
+              onPageStarted: (String url) {
+                print('Page started loading: $url');
               }
-              print('allowing navigation to $request');
-              return NavigationDecision.navigate;
-            },
-            onPageStarted: (String url) {
-              print('Page started loading: $url');
-            }
+          ),
+              isLoading ? Center( child: CircularProgressIndicator(
+                color: Color(0xff9B2335),
+              ),)
+                  : Stack(),
+            ],
           )));
+
         }
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
