@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _toasterJavascriptChannel(context),
               },
               navigationDelegate: (NavigationRequest request) {
-                if (request.url.startsWith('https://laceitapp.it')) {
+                if (request.url.startsWith('https://appprod.ddbvjes0hdtuq.amplifyapp.com')) {
                   print('blocking navigation to $request}');
                   return NavigationDecision.prevent;
                 }
