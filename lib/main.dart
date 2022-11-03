@@ -12,62 +12,75 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:laceitapp/Permissions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:laceitapp/navbar.dart';
+import 'package:application_icon/application_icon.dart';
 
+/*import 'package:flutter_webview_pro/platform_interface.dart';
+import 'package:flutter_webview_pro/webview_flutter.dart';
+*/
 void main() async {
   //Firebase.inizializeFirebase();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
 
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     //firebaseFunction();
     var status = Permissions.checkServiceStatus(context);
     print(status);
+
     //SystemChrome.setEnabledSystemUIOverlays ([]);
-    return  MaterialApp(
-      title: 'LaceItApp',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+    return MaterialApp(
+        themeMode: ThemeMode.light,
+        title: 'LaceItApp',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
         builder: EasyLoading.init(),
-      home: Scaffold(
-        body: SafeArea(
-            child: MyHomePage(title: 'Flutter Demo Home Page')),
-    ));
+        home: Scaffold(
+          body: SafeArea(child: MyHomePage()),
+        ));
   }
 
   void firebaseFunction() async {
     Firebase.getToken();
     Firebase.listenForegroundMessage();
-
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   late WebViewController _controller;
+  final String baseUrl = 'https://appprod.ddbvjes0hdtuq.amplifyapp.com';
+  String uri = "/app/maps";
+  String home = 'https://appprod.ddbvjes0hdtuq.amplifyapp.com/app/home';
   DateTime pre_backpress = DateTime.now();
-  bool isLoading=true;
+  bool isLoading = true;
 
   @override
   void initState() {
-
     super.initState();
   }
+
+  /*void changeUrl(String newUri) {
+    print(newUri);
+    setState(() {
+      uri = newUri;
+    });
+    _controller.loadUrl(baseUrl + uri);
+  }
+  */
+
+
   /*
     void initState() {
 
@@ -86,17 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
    */
 
-    @override
-    Widget build(BuildContext context) {
-
-      /*SystemChrome.setEnabledSystemUIMode(
+  @override
+  Widget build(BuildContext context) {
+    /*SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.manual,
         overlays: [
-          SystemUiOverlay.bottom, // Shows Status bar and hides Navigation bar
+          SystemUiOverlay.top, // Shows Status bar and hides Navigation bar
         ],
       );
       */
-      /*EasyLoading.instance
+
+    /*EasyLoading.instance
         ..indicatorType = EasyLoadingIndicatorType.fadingCircle
         ..loadingStyle = EasyLoadingStyle.dark
         ..progressColor = Color(0xff9B2335)
@@ -104,52 +117,68 @@ class _MyHomePageState extends State<MyHomePage> {
 
        */
 
+    //print(baseUrl + uri);
+    return Scaffold(
+        body: WillPopScope(
+            onWillPop: () => _exitApp(context),
+            child: Stack(
+              children: <Widget>[
+                WebView(
+                    //geolocationEnabled: true,
+                    zoomEnabled: false,
+                    initialUrl: Uri.encodeFull("https://appprod.ddbvjes0hdtuq.amplifyapp.com"),
+                    javascriptMode: JavascriptMode.unrestricted,
+                    onWebViewCreated: (WebViewController webViewController) {
+                      _controller = webViewController;
+                    },
+                    onPageFinished: (url) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      _controller.evaluateJavascript("console.log('Hello')");
+                    },
+                    gestureNavigationEnabled: true,
+                    onProgress: (int progress) {
+                      print('WebView is loading (progress : $progress%)');
+                    },
+                    javascriptChannels: <JavascriptChannel>{
+                      _toasterJavascriptChannel(context),
+                    },
+                    navigationDelegate: (NavigationRequest request) {
+                      if (request.url.startsWith(
+                          'https://appprod.ddbvjes0hdtuq.amplifyapp.com')) {
+                        print('blocking navigation to $request}');
+                        return NavigationDecision.prevent;
+                      }
+                      print('allowing navigation to $request');
+                      return NavigationDecision.navigate;
+                    },
+                    onPageStarted: (String url) {
+                      print('Page started loading: $url');
+                    }),
+                isLoading
+                    ? Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
 
-      return Scaffold(
-          body:WillPopScope(
-          onWillPop: () => _exitApp(context),
-          child: Stack(
-            children: <Widget>[
-              WebView(
-              zoomEnabled: false,
-              initialUrl: Uri.encodeFull('https://appprod.ddbvjes0hdtuq.amplifyapp.com'),
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller = webViewController;
-              },
-              onPageFinished: (url) {
-                setState(() {
-                  isLoading = false;
-                });
-                _controller.evaluateJavascript("console.log('Hello')");
-              },
-              gestureNavigationEnabled: true,
-              onProgress: (int progress) {
-                print('WebView is loading (progress : $progress%)');
-              },
-              javascriptChannels: <JavascriptChannel>{
-                _toasterJavascriptChannel(context),
-              },
-              navigationDelegate: (NavigationRequest request) {
-                if (request.url.startsWith('https://appprod.ddbvjes0hdtuq.amplifyapp.com')) {
-                  print('blocking navigation to $request}');
-                  return NavigationDecision.prevent;
-                }
-                print('allowing navigation to $request');
-                return NavigationDecision.navigate;
-              },
-              onPageStarted: (String url) {
-                print('Page started loading: $url');
-              }
-          ),
-              isLoading ? Center( child: CircularProgressIndicator(
-                color: Color(0xff9B2335),
-              ),)
-                  : Stack(),
-            ],
-          )));
+                          children: [
+                            Image.asset('images/logo_red.webp',width: 150,),
+                            SizedBox(height: 50),
+                            CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                              color: Color(0xff9B2335),
+                            )
+                          ],
+                        ),
+                      )
+                    : Stack(),
+              ],
+            )),
+        //bottomNavigationBar: MyNavBarWidget(callBackFuntion: changeUrl)
+    );
+  }
 
-        }
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
         name: 'Toaster',
@@ -165,13 +194,16 @@ class _MyHomePageState extends State<MyHomePage> {
       print("onwill goback");
       _controller.goBack();
       return Future.value(false);
-    } else if (await _controller.canGoBack()==false){
+    } else if (await _controller.canGoBack() == false) {
       final timegap = DateTime.now().difference(pre_backpress);
       final cantExit = timegap >= Duration(seconds: 2);
       pre_backpress = DateTime.now();
-      if(cantExit){
+      if (cantExit) {
         //show snackbar
-        final snack = SnackBar(content: Text('Press Back button again to Exit'),duration: Duration(seconds: 2),);
+        final snack = SnackBar(
+          content: Text('Press Back button again to Exit'),
+          duration: Duration(seconds: 2),
+        );
         ScaffoldMessenger.of(context).showSnackBar(snack);
         return Future.value(false);
       }
