@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 WebView(
                     //geolocationEnabled: true,
                     zoomEnabled: false,
-                    initialUrl: Uri.encodeFull("https://appprod.ddbvjes0hdtuq.amplifyapp.com"),
+                    initialUrl: Uri.encodeFull('https://appprod.ddbvjes0hdtuq.amplifyapp.com'),
                     javascriptMode: JavascriptMode.unrestricted,
                     onWebViewCreated: (WebViewController webViewController) {
                       _controller = webViewController;
